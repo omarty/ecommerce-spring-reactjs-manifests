@@ -3,21 +3,32 @@ kind: Application
 metadata:
   name: ecommerce
   namespace: argocd
+
 spec:
   project: default
+
   source:
-    repoURL: git@github.com:omarty/ecommerce-spring-reactjs-manifests.git
+    repoURL: https://github.com/omarty/ecommerce-spring-reactjs-manifests.git
     targetRevision: main
-    path: helm                 # ou "charts/ecommerce" si le chart n'est pas à la racine
+    path: helm
     helm:
       valueFiles:
         - values.yaml
+
   destination:
     server: https://kubernetes.default.svc
     namespace: ecommercehelm
+
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
     syncOptions:
       - CreateNamespace=true
